@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Control Interface</title>
+    <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        :root {
+            --background-color: black;
+            --button-background: black;
+            --button-border: white;
+            --button-text: white;
+            --select-border-primary: white;
+            --select-border-secondary: rgba(255, 255, 255, 0.6);
+            --arrow-button-background: rgba(255, 255, 255, 0.1);
+        }
+
+        .light-mode {
+            --background-color: white;
+            --button-background: white;
+            --button-border: gray;
+            --button-text: black;
+            --select-border-primary: black;
+            --select-border-secondary: rgba(0, 0, 0, 0.6);
+            --arrow-button-background: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: var(--background-color);
+            font-family: Arial, sans-serif;
+            color: var(--button-text);
+            user-select: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .title {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .title a {
+            color: var(--button-text);
+            text-decoration: none;
+            border-bottom: 1px solid var(--button-text);
+        }
+
+        .title a:hover {
+            opacity: 0.8;
+        }
+
+        .mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--button-background);
+            color: var(--button-text);
+            border: 2px solid var(--button-border);
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .remote-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 300px;
+        }
+
+        .button {
+            width: 80px;
+            height: 80px;
+            background-color: var(--button-background);
+            border: 2px solid var(--button-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            position: relative;
+            color: var(--button-text);
+        }
+
+        .button:active,
+        .button.clicked {
+            background-color: #444;
+            transform: scale(0.95);
+        }
+
+        .button:active {
+            background-color: var(--button-text); /* Use text color for background */
+            color: var(--button-background);     /* Use background color for text */
+            border-color: var(--button-background); /* Invert border color as well */
+        }
+
+        /* Styling for arrow keys */
+        #up,
+        #down,
+        #left,
+        #right {
+            background-color: var(--arrow-button-background);
+        }
+
+        /* Styling for the Select button */
+        #select {
+            border: 4px solid var(--select-border-primary);
+        }
+
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+            background-color: var(--button-background);
+            padding: 10px;
+            border-radius: 5px;
+            color: var(--button-text);
+        }
+    </style>
+</head>
+<body>
+    <button class="mode-toggle" onclick="toggleMode()">Toggle Mode</button>
+    <div class="title">
+        <i class="fa-regular fa-keyboard"></i>
+        <!-- <a href="#">Use Keyboard</a> -->
+    </div>
+    <div class="remote-container">
+        <div class="button" id="volume_down" name="volume_down"><i class="fas fa-volume-down"></i></div>
+        <div class="button" id="up" name="up">↑</div>
+        <div class="button" id="volume_up" name="volume_up"><i class="fas fa-volume-up"></i></div>
+        <div class="button" id="left" name="left">←</div>
+        <div class="button" id="select" name="select">Select</div>
+        <div class="button" id="right" name="right">→</div>
+        <div class="button" id="skip_backward" name="skip_backward">Prev</div>
+        <div class="button" id="down" name="down">↓</div>
+        <div class="button" id="skip_forward" name="skip_forward">Next</div>
+        <div class="button" id="play_pause" name="play_pause">Play</div>
+        <div class="button" id="menu" name="menu">Menu</div>
+        <div class="button" id="home" name="home">TV</div>
+    </div>
+    <div class="footer">
+        Upstairs Apple TV (192.168.1.135)
+    </div>
+
+    <script>
+        function toggleMode() {
+            document.body.classList.toggle("light-mode");
+        }
+
+        const keymap = {
+            "ArrowUp": "up",
+            "ArrowDown": "down",
+            "ArrowLeft": "left",
+            "ArrowRight": "right",
+            "t": "home",
+            "h": "home",
+            "Backspace": "menu",
+            "m": "menu",
+            "Escape": "menu",
+            "Space": "play_pause",
+            " ": "play_pause",
+            "Enter": "select",
+            "Previous": "skip_backward",
+            "Next": "skip_forward",
+            "[": "skip_backward",
+            "]": "skip_forward",
+            "g": "top_menu",
+            "+": "volume_up",
+            "=": "volume_up",
+            "-": "volume_down",
+            "_": "volume_down"
+        };
+
+        document.addEventListener("keydown", (event) => {
+            const buttonId = keymap[event.key];
+            if (buttonId) {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    button.classList.add("clicked");
+                    setTimeout(() => button.classList.remove("clicked"), 200);
+                    button.click();
+                }
+            }
+        });
+
+        const buttons = document.querySelectorAll(".button");
+        buttons.forEach(button => {
+            button.addEventListener("click", () => {
+                console.log(`${button.name} button clicked`);
+            });
+        });
+    </script>
+</body>
+</html>
